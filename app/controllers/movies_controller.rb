@@ -1,5 +1,8 @@
 class MoviesController < ApplicationController
 
+  attr_accessor :all_ratings
+  attr_accessor :ratings_to_show
+
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
@@ -7,7 +10,13 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    @all_ratings = Movie.all_ratings
+    if !params[:ratings].nil?
+      @ratings_to_show = params[:ratings].keys
+    else
+      @ratings_to_show = []
+    end
+    @movies = Movie.with_ratings(@ratings_to_show)
   end
 
   def new
@@ -44,4 +53,6 @@ class MoviesController < ApplicationController
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
+
+  
 end
